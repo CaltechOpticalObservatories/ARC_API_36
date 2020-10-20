@@ -557,9 +557,12 @@ namespace arc
 			bool bOldStoreCmds = m_bStoreCmds;
 			m_bStoreCmds       = false;
 
-			unMapCommonBuffer();
+			if ( isOpen() )
+			{
+				unMapCommonBuffer();
 
-			Arc_CloseHandle( m_hDevice );
+				Arc_CloseHandle( m_hDevice );
+			}
 
 			m_hDevice    = INVALID_HANDLE_VALUE;
 			m_bStoreCmds = bOldStoreCmds;
@@ -615,10 +618,6 @@ namespace arc
 			{
 				THROW( "Failed to read image buffer size : [ %d ] %e", arc::gen3::CArcBase::getSystemError(), arc::gen3::CArcBase::getSystemError() );		
 			}
-
-			std::cout << "PCI VA -> 0x" << std::hex << m_tImgBuffer.pUserAddr << std::dec << std::endl
-				<< "PCI PA -> 0x" << std::hex << m_tImgBuffer.ulPhysicalAddr << std::dec << std::endl
-				<< "PCI size -> " << m_tImgBuffer.ulSize << std::endl;
 
 			if ( m_tImgBuffer.ulSize < size_t( uiBytes ) )
 			{

@@ -32,7 +32,7 @@ GEN3_CARCDEVICE_API const int extern DEVICE_NOPARAM;
 // +----------------------------------------------------------------------------------------------------------------------------+
 // | Device access                                                                                                              |
 // +----------------------------------------------------------------------------------------------------------------------------+
-GEN3_CARCDEVICE_API const char* ArcDevice_ToString( int* pStatus );
+GEN3_CARCDEVICE_API const char* ArcDevice_ToString( unsigned int uiDeviceNumber, int* pStatus );
 
 GEN3_CARCDEVICE_API void ArcDevice_FindDevices( int* pStatus );
 GEN3_CARCDEVICE_API unsigned int ArcDevice_DeviceCount();
@@ -58,7 +58,7 @@ GEN3_CARCDEVICE_API unsigned int ArcDevice_GetId( int* pStatus );
 GEN3_CARCDEVICE_API unsigned int ArcDevice_GetStatus( int* pStatus );
 GEN3_CARCDEVICE_API void ArcDevice_ClearStatus( int* pStatus );
 
-GEN3_CARCDEVICE_API void ArcDevice_Set2xFOTransmitter( int bOnOff, int* pStatus );
+GEN3_CARCDEVICE_API void ArcDevice_Set2xFOTransmitter( unsigned int bOnOff, int* pStatus );
 GEN3_CARCDEVICE_API void ArcDevice_LoadDeviceFile( const char* pszFile, int* pStatus );
 
 // +----------------------------------------------------------------------------------------------------------------------------+
@@ -101,15 +101,16 @@ GEN3_CARCDEVICE_API void ArcDevice_SetSyntheticImageMode( unsigned int uiMode, i
 // +----------------------------------------------------------------------------------------------------------------------------+
 // | expose commands                                                                                                            |
 // +----------------------------------------------------------------------------------------------------------------------------+
-GEN3_CARCDEVICE_API void ArcDevice_SetOpenShutter( int bShouldOpen, int* pStatus );
+GEN3_CARCDEVICE_API void ArcDevice_SetOpenShutter( unsigned int bShouldOpen, int* pStatus );
 
 GEN3_CARCDEVICE_API void ArcDevice_Expose( float fExpTime, unsigned int uiRows, unsigned int uiCols, void ( *pExposeCall )( float ),
-										   void ( *pReadCall )( int ), int bOpenShutter, int* pStatus );
+										   void ( *pReadCall )( unsigned int ), unsigned int bOpenShutter, int* pStatus );
 
 GEN3_CARCDEVICE_API void ArcDevice_StopExposure( int* pStatus );
 
 GEN3_CARCDEVICE_API void ArcDevice_Continuous( unsigned int uiRows, unsigned int uiCols, unsigned int uiNumOfFrames, float fExpTime,
-											   void ( *pFrameCall )( int, int, int, int, void * ), unsigned int uiOpenShutter, int* pStatus );
+											   void ( *pFrameCall )( unsigned int, unsigned int, unsigned int, unsigned int, void * ),
+											   unsigned int uiOpenShutter, int* pStatus );
 
 GEN3_CARCDEVICE_API void ArcDevice_StopContinuous( int* pStatus );
 

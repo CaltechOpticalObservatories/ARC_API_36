@@ -1,0 +1,8 @@
+HOME=/home/streit/Documents/CODE/REMIR/rrr
+
+API=/home/streit/Documents/CODE/REMIR/ARC_API
+
+export LD_LIBRARY_PATH=$API
+
+MALLOC_CHECK=2 $HOME/Release/rrr $@ 
+

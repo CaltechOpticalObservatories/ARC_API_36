@@ -38,19 +38,19 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: libCArcFitsFile3.6.so
+all: libCArcDevice3.6.so
 
 # Tool invocations
-libCArcFitsFile3.6.so: $(OBJS) $(USER_OBJS)
+libCArcDevice3.6.so: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -L"/home/streit/Documents/ARC_API/3.6/CArcBase/Debug" -L/home/streit/Documents/ARC_API/3.6/cfitsio-3450/lib -shared -o "libCArcFitsFile3.6.so" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -L"/home/streit/Documents/ARC_API/3.6/CArcBase/Debug" -shared -o "libCArcDevice3.6.so" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(LIBRARIES)$(CC_DEPS)$(C++_DEPS)$(C_UPPER_DEPS)$(CXX_DEPS)$(OBJS)$(CPP_DEPS)$(C_DEPS) libCArcFitsFile3.6.so
+	-$(RM) $(LIBRARIES)$(CC_DEPS)$(C++_DEPS)$(C_UPPER_DEPS)$(CXX_DEPS)$(OBJS)$(CPP_DEPS)$(C_DEPS) libCArcDevice3.6.so
 	-@echo ' '
 
 .PHONY: all clean dependents

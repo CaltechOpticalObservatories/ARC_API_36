@@ -536,8 +536,7 @@ namespace arc
 		// +----------------------------------------------------------------------------
 		// |  open
 		// +----------------------------------------------------------------------------
-		// |  Opens a connection to the gen3 driver associated with the specified
-		// |  gen3.
+		// |  Opens a connection to the gen3 driver
 		// |
 		// |  Throws std::runtime_error on error
 		// |
@@ -660,9 +659,12 @@ namespace arc
 			bool bOldStoreCmds = m_bStoreCmds;
 			m_bStoreCmds       = false;
 
-			unMapCommonBuffer();
+			if ( isOpen() )
+			{
+				unMapCommonBuffer();
 
-			Arc_CloseHandle( m_hDevice );
+				Arc_CloseHandle( m_hDevice );
+			}
 
 			m_uiCCParam   = 0;
 			m_hDevice    = INVALID_HANDLE_VALUE;
@@ -713,13 +715,9 @@ namespace arc
 				THROW( "Invalid buffer size: %u. Must be greater than zero!", uiBytes );		
 			}
 
-			std::cout << "MAP bytes -> " << uiBytes << std::endl;
-
 			//  Map the kernel buffer
 			// +----------------------------------------------------+
 			m_tImgBuffer.pUserAddr = ( std::uint16_t* )Arc_MMap( m_hDevice, ARC_MEM_MAP, size_t( uiBytes ) );
-
-			std::cout << "MAP m_tImgBuffer.pUserAddr -> " << std::hex << ( std::uint64_t )m_tImgBuffer.pUserAddr << std::dec << std::endl;
 
 			if ( m_tImgBuffer.pUserAddr == MAP_FAILED )
 			{
@@ -1241,7 +1239,7 @@ namespace arc
 				THROW( "Invalid BAR number: 0x%X", eBar );
 			}
 
-			auto iSuccess = Arc_IOCtl( m_hDevice, ARC_WRITE_BAR, tArgs.data(), ( tArgs.size() * sizeof( std::uint32_t ) ) );
+			auto iSuccess = Arc_IOCtl( m_hDevice, ARC_WRITE_BAR, tArgs.data(), static_cast<std::uint32_t>( tArgs.size() * sizeof( std::uint32_t ) ) );
 
 			if ( !iSuccess )
 			{
@@ -1275,7 +1273,7 @@ namespace arc
 				THROW( "Invalid BAR number: 0x%X", eBar );
 			}
 
-			auto iSuccess = Arc_IOCtl( m_hDevice, ARC_READ_BAR, tIn.data(), ( tIn.size() * sizeof( std::uint32_t ) ) );
+			auto iSuccess = Arc_IOCtl( m_hDevice, ARC_READ_BAR, tIn.data(), static_cast<std::uint32_t>( tIn.size() * sizeof( std::uint32_t ) ) );
 
 			if ( !iSuccess )
 			{

@@ -44,7 +44,7 @@ all: libCArcFitsFile3.6.so
 libCArcFitsFile3.6.so: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -L"/home/streit/Documents/ARC_API/3.6"/Release -L/home/streit/Documents/ARC_API/3.6/cfitsio-3450/lib -shared -o "libCArcFitsFile3.6.so" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -L/home/streit/Documents/ARC_API/3.6/cfitsio-3450/lib -L"/home/streit/Documents/ARC_API/3.6"/Release -shared -o "libCArcFitsFile3.6.so" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build
