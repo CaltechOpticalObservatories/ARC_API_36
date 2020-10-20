@@ -1,0 +1,11 @@
+prefix=/home/streit/Documents/ARC_API/4.5/cfitsio-3450
+exec_prefix=/home/streit/Documents/ARC_API/4.5/cfitsio-3450
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: cfitsio
+Description: FITS File Subroutine Library
+Version: 3.45
+Libs: -L${libdir} -lcfitsio 
+Libs.private: -lm
+Cflags: -I${includedir}
