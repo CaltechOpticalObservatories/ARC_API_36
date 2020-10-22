@@ -18,7 +18,6 @@
 
 #include <stdexcept>
 #include <cstdint>
-#include <cstring>
 #include <memory>
 
 #include <functional>
@@ -57,7 +56,7 @@ namespace arc
 					/** Constructor
 					 *  @param uiChannelCount - The number of channels in the image(s)
 					 */
-					CAvgStats( std::uint32_t uiChannelCount ) : uiImageCount( 0 )
+					CAvgStats( std::uint32_t uiChannelCount )
 					{
 						this->uiChannelCount = uiChannelCount;
 
