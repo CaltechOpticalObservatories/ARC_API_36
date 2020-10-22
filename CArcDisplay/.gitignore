@@ -1,3 +1,5 @@
 Release
+*.cproject
+*.xml
 *.o
 *.so
