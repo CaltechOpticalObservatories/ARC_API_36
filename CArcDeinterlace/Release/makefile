@@ -1,7 +1,3 @@
-################################################################################
-# Automatically-generated file. Do not edit!
-################################################################################
-
 -include ../makefile.init
 
 RM := rm -rf
@@ -44,7 +40,7 @@ all: libCArcDeinterlace3.6.so
 libCArcDeinterlace3.6.so: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -L"/home/streit/Documents/ARC_API/3.6"/Release -shared -o "libCArcDeinterlace3.6.so" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -L"/opt/ARC_API/3.6"/Release -shared -o "libCArcDeinterlace3.6.so" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build
@@ -55,7 +51,7 @@ clean:
 	-@echo ' '
 
 post-build:
-	-cp "/home/streit/Documents/ARC_API/3.6/CArcDeinterlace/Release/libCArcDeinterlace3.6.so" /home/streit/Documents/JAVA/Owl/3.6/API; cp "/home/streit/Documents/ARC_API/3.6/CArcDeinterlace/Release/libCArcDeinterlace3.6.so" /home/streit/Documents/ARC_API/3.6/Release
+	-cp "/opt/ARC_API/3.6/CArcDeinterlace/Release/libCArcDeinterlace3.6.so" /opt/ARC_API/3.6/Release
 	-@echo ' '
 
 .PHONY: all clean dependents post-build

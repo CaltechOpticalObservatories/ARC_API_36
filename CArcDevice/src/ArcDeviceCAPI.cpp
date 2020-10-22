@@ -2405,10 +2405,10 @@ GEN3_CARCDEVICE_API const char* ArcDevice_GetLastError()
 //// +------------------------------------------------------------------------------------+
 //// | Verify class pointer macro
 //// +------------------------------------------------------------------------------------+
-//#define VERIFY_CLASS_PTR( ptr )													\
-//						if ( ptr.get() == nullptr )								\
-//						{														\
-//							THROW( "Invalid class object pointer!" );			\
+//#define VERIFY_CLASS_PTR( ptr )
+//						if ( ptr.get() == nullptr )
+//						{
+//							THROW( "Invalid class object pointer!" );
 //						}
 //
 //
