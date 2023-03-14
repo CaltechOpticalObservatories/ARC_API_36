@@ -46,7 +46,7 @@ namespace arc
 		 // +----------------------------------------------------------------------------------------------------------+
 		 // | Library build and version info                                                                           |
 		 // +----------------------------------------------------------------------------------------------------------+
-		template <typename T> const std::string CArcFitsFile<T>::m_sVersion = std::string( "ARC Gen IV FITS API Library.     " ) +
+		template <typename T> const std::string CArcFitsFile<T>::m_sVersion = std::string( "ARC Gen III FITS API Library v3.6.     " ) +
 
 #ifdef _WINDOWS
 			CArcBase::formatString( "[ Compiler Version: %d, Built: %s ]", _MSC_VER, __TIMESTAMP__ );

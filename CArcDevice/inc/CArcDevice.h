@@ -5,6 +5,7 @@
 #include <CArcDeviceDllMain.h>
 #include <ArcOSDefs.h>
 #include <CExpIFace.h>
+#include <CooExpIFace.h>
 #include <CConIFace.h>
 #include <TempCtrl.h>
 #include <CArcLog.h>
@@ -145,6 +146,7 @@ namespace arc
 				virtual void setOpenShutter( bool bShouldOpen );
 
 				virtual void expose( float fExpTime, std::uint32_t uiRows, std::uint32_t uiCols, const bool& bAbort = false, arc::gen3::CExpIFace* pExpIFace = nullptr, bool bOpenShutter = true );
+				virtual void expose( int devnum, const std::uint32_t &uiExpTime, std::uint32_t uiRows, std::uint32_t uiCols, const bool& bAbort = false, arc::gen3::CooExpIFace* pCooExpIFace = nullptr, bool bOpenShutter = true );
 
 				virtual void stopExposure( void ) = 0;
 

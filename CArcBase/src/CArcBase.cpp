@@ -38,7 +38,7 @@ namespace arc
 		// +----------------------------------------------------------------------------------------------------------+
 		// | Library build and version info                                                                           |
 		// +----------------------------------------------------------------------------------------------------------+
-		const std::string CArcBase::m_sVersion = std::string( "ARC Gen IV Base API Library.     " ) +
+		const std::string CArcBase::m_sVersion = std::string( "ARC Gen III Base API Library v3.6.     " ) +
 
 		#ifdef _WINDOWS
 			CArcBase::formatString( "[ Compiler Version: %d, Built: %s ]", _MSC_VER, __TIMESTAMP__ );

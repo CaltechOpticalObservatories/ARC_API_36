@@ -53,6 +53,7 @@ namespace arc
 	#define SET			0x00534554	// Set Exposure Time
 	#define PEX			0x00504558	// Pause EXposure
 	#define REX			0x00524558	// Resume EXposure
+	#define GET			0x00474554	// Get Exposure Time
 	#define RET			0x00524554	// Read Elapsed Time
 	#define PON			0x00504F4E	// Power ON
 	#define POF			0x00504F46	// Power OFf

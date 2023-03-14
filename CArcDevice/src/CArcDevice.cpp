@@ -16,6 +16,7 @@
 #include <thread>
 #include <queue>
 #include <cmath>
+#include <iostream>     // for std::cerr
 
 #include <CArcBase.h>
 #include <CArcDevice.h>
@@ -1439,6 +1440,211 @@ namespace arc
 				}
 
 				std::this_thread::sleep_for( std::chrono::milliseconds( 25 ) );
+			}
+		}
+
+
+		// +----------------------------------------------------------------------------
+		// |  expose -- Caltech
+		// +----------------------------------------------------------------------------
+		// |  Starts an exposure using the specified exposure time and whether or not
+		// |  to open the shutter. Callbacks for the elapsed exposure time and image
+		// |  data readout can be used.
+		// |
+		// |  Throws std::runtime_error on error
+		// |
+		// |  <IN> -> fExpTime - The exposure time ( in seconds ).
+		// |  <IN> -> bOpenShutter - Set to 'true' if the shutter should open during the
+		// |                         exposure. Set to 'false' to keep the shutter closed.
+		// |  <IN> -> uiRows - The image row size ( in pixels ).
+		// |  <IN> -> uiCols - The image column size ( in pixels ).
+		// |  <IN> -> uiExpTime - The exposure time ( in milliseconds ).
+		// |  <IN> -> bAbort - Pointer to boolean value that can cause the readout
+		// |                   method to abort/stop either exposing or image readout.
+		// |                   NULL by default.
+		// |  <IN> -> pExpIFace - Function pointer to CooExpIFace class. NULL by default.
+		// +----------------------------------------------------------------------------
+		void CArcDevice::expose( int devnum, const std::uint32_t &uiExpTime, std::uint32_t uiRows, std::uint32_t uiCols, const bool& bAbort, arc::gen3::CooExpIFace* pCooExpIFace, bool bOpenShutter )
+		{
+			std::uint32_t	uiElapsedTime		= 0;
+			std::uint32_t	uiExposureTime		= 0;
+			std::uint32_t	uiRetTime		= uiExpTime;
+			bool		bInReadout		= false;
+			bool		bOnce			= true;
+			std::uint32_t	uiTimeoutCounter	= 0;
+			std::uint32_t	uiLastPixelCount	= 0;
+			std::uint32_t	uiPixelCount		= 0;
+			std::uint32_t	uiExposeCounter		= 0;
+			std::uint32_t	uiFPBCount		= 0;
+			std::uint32_t	uiPCIFrameCount		= 0;
+			std::uint32_t uiImageSize         	= uiRows * uiCols * sizeof( std::uint16_t );
+			std::uint32_t uiBoundedImageSize  	= getContinuousImageSize( uiImageSize );
+
+			//
+			// Check for adequate buffer size
+			//
+			if ( ( static_cast<std::uint64_t>( uiRows ) * static_cast< std::uint64_t >( uiCols ) * sizeof( std::uint16_t ) ) > commonBufferSize() )
+			{
+				THROW( "arc::gen3::CArcDevice::expose() Image [ %u x %u ] exceeds buffer size: %u. Try ReMapCommonBuffer().", uiCols, uiRows, commonBufferSize() );
+			}
+
+			//
+			// Set the shutter position
+			//
+			setOpenShutter( bOpenShutter );
+
+			//
+			// Start the exposure
+			//
+			auto uiRetVal = command( { TIM_ID, SEX } );
+
+			if ( uiRetVal != DON )
+			{
+				THROW( "arc::gen3::CArcDevice::expose() Start exposure command failed. Reply: 0x%X", uiRetVal );
+			}
+
+			while ( uiPixelCount < ( uiRows * uiCols ) )
+			{
+				if ( isReadout() )
+				{
+					bInReadout = true;
+				}
+
+				// ----------------------------
+				// READ ELAPSED EXPOSURE TIME
+				// ----------------------------
+				// Checking the remaining time > 1 sec. is to prevent race conditions with
+				// sending RET while the PCI board is going into readout. Added check
+				// for exposure_time > 1 sec. to prevent RET error.
+				if ( !bInReadout && uiRetTime > 1000 && uiExposeCounter >= 5 && uiExpTime > 1000 )
+				{
+					// Ignore all RET timeouts
+					try
+					{
+						// Read the elapsed exposure time.
+						uiElapsedTime = command( { TIM_ID, RET } );
+
+						// Read the exposure time (if supported)
+						uiExposureTime = command( { TIM_ID, GET } );
+						if ( uiExposureTime==ERR ) uiExposureTime=0x1BAD1BAD;
+
+						if ( uiElapsedTime != ROUT )
+						{
+							if ( containsError( uiElapsedTime ) || containsError( uiElapsedTime, 0, uiExpTime ) )
+							{
+								stopExposure();
+								THROW( "arc::gen3::CArcDevice::expose() Failed to read elapsed time!" );
+							}
+
+							if ( bAbort )
+							{
+								stopExposure();
+								THROW( "arc::gen3::CArcDevice::expose() aborted" );
+							}
+
+							uiExposeCounter  = 0;
+							uiRetTime = uiExpTime - uiElapsedTime;
+
+							if ( pCooExpIFace != nullptr )
+							{
+								pCooExpIFace->exposeCallback( devnum, uiElapsedTime, uiExposureTime );
+							}
+						}
+					}
+					catch ( ... ) {}
+				}
+				else
+				if ( bInReadout && bOnce )
+				{
+					bOnce = false;
+					if ( pCooExpIFace != nullptr )
+					{
+						pCooExpIFace->exposeCallback( devnum, uiExpTime, uiExposureTime );
+					}
+				}
+
+				uiExposeCounter++;
+
+				// ----------------------------
+				// READOUT PIXEL COUNT
+				// ----------------------------
+				if ( bAbort )
+				{
+					stopExposure();
+					THROW( "arc::gen3::CArcDevice::expose() aborted" );
+				}
+
+				// Save the last pixel count for use by the timeout counter.
+				uiLastPixelCount = uiPixelCount;
+				uiPixelCount     = getPixelCount();
+
+				if ( containsError( uiPixelCount ) )
+				{
+					stopExposure();
+					THROW( "arc::gen3::CArcDevice::expose() Failed to read pixel count!" );
+				}
+
+				if ( bAbort )
+				{
+					stopExposure();
+					THROW( "arc::gen3::CArcDevice::expose() aborted" );
+				}
+
+				if ( bInReadout && pCooExpIFace != nullptr )
+				{
+					pCooExpIFace->readCallback( devnum, uiPixelCount, uiRows*uiCols );
+				}
+
+				if ( bAbort )
+				{
+					stopExposure();
+					THROW( "arc::gen3::CArcDevice::expose() aborted" );
+				}
+
+				// If the controller's in READOUT, then increment the timeout
+				// counter. Checking for readout prevents timeouts when clearing
+				// large and/or slow arrays.
+				if ( bInReadout && uiPixelCount == uiLastPixelCount )
+				{
+					uiTimeoutCounter++;
+				}
+				else
+				{
+					uiTimeoutCounter = 0;
+				}
+
+				if ( bAbort )
+				{
+					stopExposure();
+					THROW( "arc::gen3::CArcDevice::expose() aborted" );
+				}
+
+				if ( uiTimeoutCounter >= READ_TIMEOUT )
+				{
+					stopExposure();
+					THROW( "arc::gen3::CArcDevice::expose() Read timeout!" );
+				}
+
+				std::this_thread::sleep_for( std::chrono::milliseconds( 25 ) );
+			}
+
+//			std::cerr << "[ARC_API] done reading image " << uiPCIFrameCount << " on dev " << devnum << "\n";
+
+			uiPCIFrameCount = getFrameCount();
+
+			// Call external deinterlace and fits file functions here
+			if ( pCooExpIFace != nullptr )
+			{
+//				std::cerr << "[ARC_API] calling frameCallback with devnum=" << devnum 
+//					  << " uiFPBCount=" << uiFPBCount 
+//					  << " uiPCIFrameCount=" << uiPCIFrameCount 
+//					  << " uiRows=" << uiRows << " uiCols=" << uiCols << "\n";
+				pCooExpIFace->frameCallback( devnum, 
+							  uiFPBCount,
+							  uiPCIFrameCount,
+							  uiRows,
+							  uiCols,
+							  ( commonBufferVA() + static_cast<std::uint64_t>( uiFPBCount ) * static_cast< std::uint64_t >( uiBoundedImageSize ) ) );
 			}
 		}
 

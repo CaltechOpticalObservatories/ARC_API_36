@@ -51,7 +51,7 @@ namespace arc
 // +----------------------------------------------------------------------------------------------------------+
 // | Library build and version info                                                                           |
 // +----------------------------------------------------------------------------------------------------------+
-		template <typename T> const std::string CArcDeinterlace<T>::m_sVersion = std::string( "ARC Gen IV DLace API Library.    " ) +
+		template <typename T> const std::string CArcDeinterlace<T>::m_sVersion = std::string( "ARC Gen III DLace API Library v3.6.    " ) +
 
 		#ifdef _WINDOWS
 			CArcBase::formatString( "[ Compiler Version: %d, Built: %s ]", _MSC_VER, __TIMESTAMP__ );

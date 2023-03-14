@@ -616,9 +616,9 @@ namespace arc
 				THROW( "Failed to read image buffer size : [ %d ] %e", arc::gen3::CArcBase::getSystemError(), arc::gen3::CArcBase::getSystemError() );		
 			}
 
-			std::cout << "PCI VA -> 0x" << std::hex << m_tImgBuffer.pUserAddr << std::dec << std::endl
-				<< "PCI PA -> 0x" << std::hex << m_tImgBuffer.ulPhysicalAddr << std::dec << std::endl
-				<< "PCI size -> " << m_tImgBuffer.ulSize << std::endl;
+			std::cout << "(arc::gen3::CArcPCI::mapCommonBuffer) PCI VA=" << std::hex << std::showbase << m_tImgBuffer.pUserAddr 
+				  << " PA=" << std::hex << std::showbase << m_tImgBuffer.ulPhysicalAddr
+				  << " size=" << std::dec << m_tImgBuffer.ulSize << std::endl;
 
 			if ( m_tImgBuffer.ulSize < size_t( uiBytes ) )
 			{
@@ -1198,6 +1198,11 @@ namespace arc
 
 			else
 			{
+				uiRetVal = ioctlDevice( ASTROPCI_GET_HCTR );
+				uiRetVal = ioctlDevice( ASTROPCI_GET_DMA_ADDR );
+				uiRetVal = ioctlDevice( ASTROPCI_GET_HSTR );
+				uiRetVal = ioctlDevice( ASTROPCI_GET_DMA_SIZE );
+				uiRetVal = ioctlDevice( ASTROPCI_GET_FRAMES_READ );
 				uiRetVal = ioctlDevice( ASTROPCI_GET_PROGRESS );
 			}
 
