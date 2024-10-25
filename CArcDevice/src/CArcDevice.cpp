@@ -1650,6 +1650,53 @@ namespace arc
 
 
 		// +----------------------------------------------------------------------------
+		// |  readout -- Caltech
+		// +----------------------------------------------------------------------------
+		void CArcDevice::readout( int devnum, std::uint32_t uiRows, std::uint32_t uiCols, arc::gen3::CooExpIFace* pCooExpIFace )
+		{
+			std::cerr << "[ARC_API] in readout with devnum=" << devnum << "\n";
+
+			std::uint32_t	uiPCIFrameCount		= 0;
+
+			uiPCIFrameCount = getFrameCount();
+
+			// Call external deinterlace and fits file functions here
+			if ( pCooExpIFace != nullptr )
+			{
+				std::cerr << "[ARC_API] CArcDevice::readout calling frameCallback with devnum=" << devnum << "\n";
+
+				pCooExpIFace->frameCallback( devnum, 
+							  0,
+							  uiPCIFrameCount,
+							  uiRows,
+							  uiCols,
+							  commonBufferVA() );
+			}
+		}
+
+
+		// +----------------------------------------------------------------------------
+		// |  frame_transfer -- Caltech
+		// +----------------------------------------------------------------------------
+		void CArcDevice::frame_transfer( int devnum, std::uint32_t uiRows, std::uint32_t uiCols, arc::gen3::CooExpIFace* pCooExpIFace )
+		{
+			std::cerr << "[ARC_API] in frame_transfer with devnum=" << devnum << "\n";
+
+			std::uint32_t	uiPCIFrameCount		= 0;
+
+			uiPCIFrameCount = getFrameCount();
+
+			// Call external deinterlace and fits file functions here
+			if ( pCooExpIFace != nullptr )
+			{
+				std::cerr << "[ARC_API] CArcDevice::frame_transfer calling ftCallback with devnum=" << devnum << "\n";
+
+				pCooExpIFace->ftCallback( devnum );
+			}
+		}
+
+
+		// +----------------------------------------------------------------------------
 		// |  continuous
 		// +----------------------------------------------------------------------------
 		// |  This method can be called to start continuous readout.  A callback for 

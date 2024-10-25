@@ -28,6 +28,8 @@ namespace arc
                                                             std::uint32_t   uiCols,             // # of cols in frame
                                                             void* pBuffer ) = 0;                // Pointer to frame start in buffer
 
+                                virtual void ftCallback( int devnum ) = 0;
+
 			protected:
 
 				CooExpIFace( void ) = default;
